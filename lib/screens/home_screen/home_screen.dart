@@ -19,9 +19,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
+
   PageController pageController = PageController();
 
-  double newAmount = 0;
+  List<TransactionModel> transactions =
+      TransactionDB.instance.transactionListNotifier.value;
 
   @override
   void initState() {
@@ -56,79 +58,72 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: const Color(0xFF15485D)),
                     height: 100,
                     width: 400,
-                    child: ValueListenableBuilder(
-                        valueListenable:
-                            TransactionDB().transactionListNotifier,
-                        builder: (BuildContext context,
-                            List<TransactionModel> newList, Widget? _) {
-                          for (int i = 0; i < newList.length; i++) {
-                            var values = newList[i];
-                            if (values.category.type == CategoryType.income) {
-                              newAmount = newAmount + values.amount;
-                              break;
-                            }
-                          }
-
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  const Text(
-                                    'Income',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.white),
-                                  ),
-                                  Text(
-                                    newAmount.toString(),
-                                    style: const TextStyle(
-                                        color: Colors.white, fontSize: 24),
-                                  )
-                                ],
-                              ),
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: const [
-                                  Text(
-                                    'Total',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.white),
-                                  ),
-                                  Text(
-                                    'XXXXX',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 24),
-                                  )
-                                ],
-                              ),
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: const [
-                                  Text(
-                                    'Expense',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.white),
-                                  ),
-                                  Text(
-                                    'XXXXX',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 24),
-                                  )
-                                ],
-                              ),
-                            ],
-                          );
-                        }),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            const Text(
+                              'Income',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white),
+                            ),
+                            Text(
+                              TransactionDB.instance
+                                  .allIncomeAmount()
+                                  .toString(),
+                              style: const TextStyle(
+                                  color: Colors.green,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            const Text(
+                              'Balance',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white),
+                            ),
+                            Text(
+                              TransactionDB.instance.totalAmount().toString(),
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            const Text(
+                              'Expense',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white),
+                            ),
+                            Text(
+                              TransactionDB.instance
+                                  .allExpenseAmount()
+                                  .toString(),
+                              style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

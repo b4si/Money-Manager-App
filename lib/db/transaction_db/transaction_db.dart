@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:money_manager/transaction_model/transaction_model.dart';
 
+import '../../catagory_model/category_model.dart';
+
 const transactionDbName = 'transaction-db';
 
 abstract class TransactionDbFunctions {
@@ -39,6 +41,41 @@ class TransactionDB implements TransactionDbFunctions {
     transactionListNotifier.value.addAll(_list);
 
     transactionListNotifier.notifyListeners();
+  }
+
+  double totalAmount() {
+    double totalAmount = 0;
+    for (var i = 0; i < transactionListNotifier.value.length; i++) {
+      totalAmount = (allIncomeAmount() - allExpenseAmount());
+    }
+    refresh();
+    return totalAmount;
+  }
+
+  double allIncomeAmount() {
+    double totalIncomeAmount = 0;
+    for (var i = 0; i < transactionListNotifier.value.length; i++) {
+      if (transactionListNotifier.value[i].category.type ==
+          CategoryType.income) {
+        totalIncomeAmount =
+            totalIncomeAmount + transactionListNotifier.value[i].amount;
+      }
+      refresh();
+    }
+    return totalIncomeAmount;
+  }
+
+  double allExpenseAmount() {
+    double totalExpenseAmount = 0;
+    for (var i = 0; i < transactionListNotifier.value.length; i++) {
+      if (transactionListNotifier.value[i].category.type ==
+          CategoryType.expense) {
+        totalExpenseAmount =
+            totalExpenseAmount + transactionListNotifier.value[i].amount;
+      }
+      refresh();
+    }
+    return totalExpenseAmount;
   }
 
   @override

@@ -58,31 +58,30 @@ class _CategoryScreenState extends State<CategoryScreen> {
               builder:
                   (BuildContext ctx, List<CategoryModel> newList, Widget? _) {
                 return GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                    ),
-                    itemCount: newList.length,
-                    itemBuilder: (ctx, index) {
-                      final category = newList[index];
-                      return Card(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(category.name),
-                            ),
-                            IconButton(
-                                onPressed: () {
-                                  CategoryDB.instance
-                                      .deleteCategory(category.id);
-                                },
-                                icon: const Icon(Icons.delete))
-                          ],
-                        ),
-                      );
-                    });
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                  ),
+                  itemCount: newList.length,
+                  itemBuilder: (ctx, index) {
+                    final category = newList[index];
+                    return Card(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(category.name),
+                          ),
+                          IconButton(
+                              onPressed: () {
+                                CategoryDB.instance.deleteCategory(category.id);
+                              },
+                              icon: const Icon(Icons.delete))
+                        ],
+                      ),
+                    );
+                  },
+                );
               },
             ),
           ),

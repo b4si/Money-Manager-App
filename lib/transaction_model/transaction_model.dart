@@ -14,13 +14,15 @@ class TransactionModel extends HiveObject {
   final CategoryModel category;
   @HiveField(4)
   String? id;
+  @HiveField(5)
+  final String notes;
 
-  TransactionModel({
-    required this.amount,
-    required this.date,
-    required this.type,
-    required this.category,
-  }) {
+  TransactionModel(
+      {required this.amount,
+      required this.date,
+      required this.type,
+      required this.category,
+      required this.notes}) {
     id = DateTime.now().millisecondsSinceEpoch.toString();
   }
 }

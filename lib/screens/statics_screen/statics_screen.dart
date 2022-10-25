@@ -1,7 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:money_manager/catagory_model/category_model.dart';
+import 'package:money_manager/db/category_db/category_db.dart';
 import 'package:money_manager/db/transaction_db/transaction_db.dart';
-
 import '../../transaction_model/transaction_model.dart';
 
 class StaticsScreen extends StatefulWidget {
@@ -12,10 +13,29 @@ class StaticsScreen extends StatefulWidget {
 }
 
 class _StaticsScreenState extends State<StaticsScreen> {
+  List<Color> colorList = [
+    Colors.red,
+    Colors.greenAccent,
+    Colors.blue,
+    Colors.yellow,
+    Colors.purpleAccent,
+    Colors.brown,
+  ];
+
   List<String> items = [
     'Income',
     'Expense',
   ];
+
+  List<TransactionModel> transactions =
+      TransactionDB.instance.transactionListNotifier.value;
+
+  List<CategoryModel> expCategories =
+      CategoryDB.instance.expenseCategoryListNotifier.value;
+
+  List<CategoryModel> incCategories =
+      CategoryDB.instance.incomeCategoryListNotifier.value;
+
   String? selectedItem;
   @override
   Widget build(BuildContext context) {
@@ -41,40 +61,37 @@ class _StaticsScreenState extends State<StaticsScreen> {
           },
         ),
         Expanded(
-          child: ValueListenableBuilder(
-            valueListenable: TransactionDB.instance.transactionListNotifier,
-            builder: (BuildContext context, List<TransactionModel> newList, _) {
-              return PieChartData == 0
-                  ? const Text('NO')
-                  : PieChart(
-                      PieChartData(
-                        centerSpaceRadius: 70,
-                        sectionsSpace: 5,
-                        sections: [
+            child: selectedItem == items[1]
+                ? PieChart(
+                    PieChartData(
+                      centerSpaceRadius: 70,
+                      sectionsSpace: 5,
+                      sections: [
+                        for (var i = 0; i < expCategories.length; i++)
                           PieChartSectionData(
-                            title: newList[0].category.name,
-                            color: Colors.amber,
-                            value: newList[0].amount,
+                            title: expCategories[i].name,
+                            color: colorList[i],
+                            value: transactions[i].amount,
                             radius: 40,
                           ),
+                      ],
+                    ),
+                  )
+                : PieChart(
+                    PieChartData(
+                      centerSpaceRadius: 70,
+                      sectionsSpace: 5,
+                      sections: [
+                        for (var i = 0; i < incCategories.length; i++)
                           PieChartSectionData(
-                              title: newList[1].category.name,
-                              color: Colors.green,
-                              value: newList[1].amount),
-                          PieChartSectionData(
-                              title: newList[2].category.name,
-                              color: Colors.red,
-                              value: newList[2].amount),
-                          PieChartSectionData(
-                              title: newList[4].category.name,
-                              color: Colors.blue,
-                              value: newList[4].amount),
-                        ],
-                      ),
-                    );
-            },
-          ),
-        ),
+                            title: incCategories[i].name,
+                            color: colorList[i],
+                            value: transactions[i].amount,
+                            radius: 40,
+                          ),
+                      ],
+                    ),
+                  )),
       ],
     );
   }

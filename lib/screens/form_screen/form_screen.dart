@@ -18,6 +18,17 @@ class FormScreen extends StatefulWidget {
 ValueNotifier<CategoryType> selectedCategoryNotifier =
     ValueNotifier(CategoryType.income);
 
+ValueNotifier<List<TransactionModel>> transactions =
+    TransactionDB.instance.transactionListNotifier;
+
+List<CategoryModel> incCategories =
+    CategoryDB.instance.incomeCategoryListNotifier.value;
+
+List<CategoryModel> expCategories =
+    CategoryDB.instance.incomeCategoryListNotifier.value;
+
+final _formKey = GlobalKey<FormState>();
+
 class _FormScreenState extends State<FormScreen> {
   String? _categoryID;
   DateTime? _selectedDate;
@@ -32,7 +43,7 @@ class _FormScreenState extends State<FormScreen> {
 
   TextEditingController amountController = TextEditingController();
   final nameEditingController = TextEditingController();
-
+  TextEditingController notesController = TextEditingController();
   final incomeCategoryList = CategoryDB().incomeCategoryListNotifier.value;
   final expenseCategoryList = CategoryDB().expenseCategoryListNotifier.value;
   @override
@@ -46,10 +57,9 @@ class _FormScreenState extends State<FormScreen> {
         backgroundColor: const Color(0xFF15485D),
       ),
       body: SizedBox(
-        height: 320,
         width: 400,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -127,7 +137,7 @@ class _FormScreenState extends State<FormScreen> {
                               top: Radius.circular(20),
                             ),
                           ),
-                          builder: (context) {
+                          builder: (ctx) {
                             return Center(
                               child: Column(
                                 children: [
@@ -140,12 +150,33 @@ class _FormScreenState extends State<FormScreen> {
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: TextFormField(
-                                      controller: nameEditingController,
-                                      decoration: const InputDecoration(
-                                        labelText: 'category name',
+                                    child: Form(
+                                      key: _formKey,
+                                      child: TextFormField(
+                                        validator: (value) {
+                                          if (value!.isEmpty) {
+                                            return 'Enter a Category name';
+                                          } else {
+                                            for (var i = 0;
+                                                i < transactions.value.length;
+                                                i++) {
+                                              if (value.toLowerCase().trim() ==
+                                                  transactions
+                                                      .value[i].category.name
+                                                      .toLowerCase()
+                                                      .trim()) {
+                                                return 'Already exist';
+                                              }
+                                            }
+                                          }
+                                          return null;
+                                        },
+                                        controller: nameEditingController,
+                                        decoration: const InputDecoration(
+                                          labelText: 'category name',
+                                        ),
+                                        maxLength: 10,
                                       ),
-                                      maxLength: 10,
                                     ),
                                   ),
                                   Row(
@@ -173,25 +204,23 @@ class _FormScreenState extends State<FormScreen> {
                                   ElevatedButton(
                                     onPressed: () {
                                       final name = nameEditingController.text;
-                                      if (name.isEmpty) {
-                                        return;
+                                      if (_formKey.currentState!.validate()) {
+                                        final type =
+                                            selectedCategoryNotifier.value;
+                                        final category = CategoryModel(
+                                          id: DateTime.now()
+                                              .millisecondsSinceEpoch
+                                              .toString(),
+                                          name: name,
+                                          type: type,
+                                        );
+                                        CategoryDB().insertCategory(category);
+                                        Navigator.of(context).pop();
+                                        setState(() {
+                                          CategoryDB.instance.refreshUI();
+                                        });
+                                        nameEditingController.clear();
                                       }
-                                      final type =
-                                          selectedCategoryNotifier.value;
-                                      final category = CategoryModel(
-                                        id: DateTime.now()
-                                            .millisecondsSinceEpoch
-                                            .toString(),
-                                        name: name,
-                                        type: type,
-                                      );
-                                      CategoryDB().insertCategory(category);
-
-                                      Navigator.of(context).pop();
-                                      setState(() {
-                                        CategoryDB.instance.refreshUI();
-                                      });
-                                      nameEditingController.clear();
                                     },
                                     child: const Text('Save'),
                                   ),
@@ -214,9 +243,21 @@ class _FormScreenState extends State<FormScreen> {
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
+                maxLength: 8,
                 inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp('[0-9.]'))
+                  FilteringTextInputFormatter.allow(
+                    RegExp('[0-9.]'),
+                  ),
                 ],
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.only(top: 5, bottom: 5, right: 12, left: 12),
+              child: TextFormField(
+                controller: notesController,
+                decoration: const InputDecoration(hintText: 'Notes'),
+                maxLength: 15,
               ),
             ),
             Padding(
@@ -255,7 +296,9 @@ class _FormScreenState extends State<FormScreen> {
                 style: ElevatedButton.styleFrom(),
                 onPressed: () {
                   checkAmount();
-                  TransactionDB.instance.refresh();
+                  setState(() {
+                    TransactionDB.instance.refresh();
+                  });
                 },
                 child: const Text('Submit'))
           ],
@@ -297,12 +340,21 @@ class _FormScreenState extends State<FormScreen> {
     } else {
       addtransaction();
       Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.all(20),
+          backgroundColor: Colors.green,
+          content: Text('Submitted Successfully'),
+        ),
+      );
     }
   }
 
   Future<void> addtransaction() async {
     final _amountText = amountController.text;
     final _date = _selectedDate;
+    final _notes = notesController.text;
 
     final _parsedAmount = double.tryParse(_amountText);
 
@@ -311,6 +363,7 @@ class _FormScreenState extends State<FormScreen> {
       date: _date!,
       type: _selectedCategorytype!,
       category: _selectedCategoryModel!,
+      notes: _notes,
     );
 
     TransactionDB.instance.addTransaction(_model);

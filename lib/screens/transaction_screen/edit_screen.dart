@@ -319,13 +319,13 @@ class _EditScreenState extends State<EditScreen> {
 
     final _parsedAmount = double.tryParse(_amountText);
 
-    final _model = TransactionModel(
-      amount: _parsedAmount!,
-      date: _date!,
-      type: _selectedCategorytype!,
-      category: _selectedCategoryModel!,
-    );
+    // final _model = TransactionModel(
+    //   amount: _parsedAmount!,
+    //   date: _date!,
+    //   type: _selectedCategorytype!,
+    //   category: _selectedCategoryModel!,
+    // );
 
-    TransactionDB.instance.addTransaction(_model);
+    // TransactionDB.instance.addTransaction(_model);
   }
 }

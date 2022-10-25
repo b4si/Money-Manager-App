@@ -12,30 +12,29 @@ class ListWidget extends StatefulWidget {
 }
 
 class _ListWidgetState extends State<ListWidget> {
-  ValueNotifier<List<TransactionModel>> transactions =
-      TransactionDB.instance.transactionListNotifier;
+  List<TransactionModel> transactions =
+      TransactionDB.instance.transactionListNotifier.value;
 
-  ValueNotifier<List<TransactionModel>> foundTransactions =
-      [] as ValueNotifier<List<TransactionModel>>;
+  List<TransactionModel> foundTransactions = [];
   @override
   void initState() {
     foundTransactions = transactions;
+
     super.initState();
   }
 
   void _runFilter(String enteredKeyword) {
-    ValueNotifier<List<TransactionModel>> results =
-        [] as ValueNotifier<List<TransactionModel>>;
+    List<TransactionModel> results = [];
     if (enteredKeyword.isEmpty) {
-      results = foundTransactions;
+      results = transactions;
     } else {
-      results = transactions.value
+      results = transactions
           .where(
             (user) => user.category.name.trim().toLowerCase().contains(
-                  enteredKeyword.toLowerCase(),
+                  enteredKeyword.trim().toLowerCase(),
                 ),
           )
-          .toList() as ValueNotifier<List<TransactionModel>>;
+          .toList();
     }
     setState(() {
       foundTransactions = results;
@@ -44,76 +43,100 @@ class _ListWidgetState extends State<ListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: foundTransactions,
-      builder: (BuildContext context, List<TransactionModel> newList, _) {
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: SizedBox(
-                height: 50,
-                child: TextFormField(
-                  onChanged: ((value) => _runFilter(value)),
-                  decoration: InputDecoration(
-                    hintText: 'Search',
-                    suffixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: SizedBox(
+            height: 50,
+            child: TextFormField(
+              onChanged: ((value) => _runFilter(value)),
+              decoration: InputDecoration(
+                hintText: 'Search',
+                suffixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
                 ),
               ),
             ),
-            ListView.separated(
-              itemBuilder: ((context, index) {
-                final transactionList = newList[index];
-
-                return Slidable(
-                  key: Key(transactionList.id!),
-                  startActionPane:
-                      ActionPane(motion: const StretchMotion(), children: [
-                    SlidableAction(
-                      onPressed: (ctx) {
+          ),
+        ),
+        Expanded(
+          child: ListView.separated(
+            itemBuilder: ((context, index) {
+              final transactionList = foundTransactions[index];
+              return Slidable(
+                key: Key(transactionList.id!),
+                startActionPane:
+                    ActionPane(motion: const StretchMotion(), children: [
+                  SlidableAction(
+                    onPressed: (ctx) {
+                      setState(() {
                         TransactionDB.instance
                             .deleteTransaction(transactionList.id!);
-                      },
-                      backgroundColor: Colors.red,
-                      icon: Icons.delete,
-                      label: "Delete",
-                    ),
-                  ]),
-                  child: ListTile(
-                    title: Text(transactionList.category.name),
-                    subtitle: Text(
-                      parseDate(transactionList.date),
-                    ),
-                    trailing: transactionList.type == CategoryType.income
-                        ? Text(
-                            '₹${transactionList.amount.toString()}',
-                            style: const TextStyle(color: Colors.green),
-                          )
-                        : Text(
-                            '₹${transactionList.amount.toString()}',
-                            style: const TextStyle(color: Colors.red),
-                          ),
+                      });
+                    },
+                    backgroundColor: Colors.red,
+                    icon: Icons.delete,
+                    label: "Delete",
                   ),
-                );
-              }),
-              separatorBuilder: (context, index) {
-                return const Padding(
-                  padding: EdgeInsets.only(right: 15, left: 15),
-                  child: Divider(
-                    thickness: 1,
-                    color: Colors.grey,
+                ]),
+                child: ListTile(
+                  onTap: () {
+                    showDialog(
+                        context: context,
+                        builder: ((context) {
+                          return SimpleDialog(
+                              contentPadding: const EdgeInsets.all(18),
+                              title: const Text('Details'),
+                              children: [
+                                Text(
+                                    'Category : ${transactionList.category.name}'),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text('Amount   : ${transactionList.amount}'),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                    'Date         : ${parseDate(transactionList.date)}'),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text('Notes       : ${transactionList.notes}'),
+                              ]);
+                        }));
+                  },
+                  title: Text(transactionList.category.name),
+                  subtitle: Text(
+                    parseDate(transactionList.date),
                   ),
-                );
-              },
-              itemCount: newList.length,
-            ),
-          ],
-        );
-      },
+                  trailing: transactionList.type == CategoryType.income
+                      ? Text(
+                          '₹${transactionList.amount.toString()}',
+                          style: const TextStyle(color: Colors.green),
+                        )
+                      : Text(
+                          '₹${transactionList.amount.toString()}',
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                ),
+              );
+            }),
+            separatorBuilder: (context, index) {
+              return const Padding(
+                padding: EdgeInsets.only(right: 15, left: 15),
+                child: Divider(
+                  thickness: 1,
+                  color: Colors.grey,
+                ),
+              );
+            },
+            itemCount: foundTransactions.length,
+          ),
+        ),
+      ],
     );
   }
 }

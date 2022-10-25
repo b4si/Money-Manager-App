@@ -1,5 +1,4 @@
 // ignore_for_file: unused_local_variable, override_on_non_overriding_member, unused_field
-
 import 'package:flutter/material.dart';
 import 'package:money_manager/screens/transaction_screen/list_widget.dart';
 
