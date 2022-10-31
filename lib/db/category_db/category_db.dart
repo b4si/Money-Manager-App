@@ -1,4 +1,4 @@
-// ignore_for_file: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
+// ignore_for_file: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member, no_leading_underscores_for_local_identifiers
 
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -10,6 +10,7 @@ abstract class CategoryDbFunctons {
   Future<List<CategoryModel>> getCategories();
   Future<void> insertCategory(CategoryModel value);
   Future<void> deleteCategory(String categoryID);
+  Future<void> deleteAllCategory();
 }
 
 class CategoryDB implements CategoryDbFunctons {
@@ -59,9 +60,15 @@ class CategoryDB implements CategoryDbFunctons {
 
   @override
   Future<void> deleteCategory(String categoryID) async {
-    // ignore: no_leading_underscores_for_local_identifiers
     final _categoryDB = await Hive.openBox<CategoryModel>(categoryDbName);
     await _categoryDB.delete(categoryID);
+    refreshUI();
+  }
+
+  @override
+  Future<void> deleteAllCategory() async {
+    final _categoryDB = await Hive.openBox<CategoryModel>(categoryDbName);
+    _categoryDB.clear();
     refreshUI();
   }
 }

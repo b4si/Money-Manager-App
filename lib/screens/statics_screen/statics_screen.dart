@@ -63,15 +63,19 @@ class _StaticsScreenState extends State<StaticsScreen> {
         Expanded(
             child: selectedItem == items[1]
                 ? PieChart(
+                    swapAnimationCurve: Curves.linear,
                     PieChartData(
                       centerSpaceRadius: 70,
                       sectionsSpace: 5,
                       sections: [
-                        for (var i = 0; i < expCategories.length; i++)
+                        for (var i = 0; i < incCategories.length; i++)
                           PieChartSectionData(
-                            title: expCategories[i].name,
+                            title: TransactionDB.instance
+                                .incomeTransactionNotifier.value[i].amount
+                                .toString(),
                             color: colorList[i],
-                            value: transactions[i].amount,
+                            value: TransactionDB.instance
+                                .incomeTransactionNotifier.value[i].amount,
                             radius: 40,
                           ),
                       ],
@@ -82,13 +86,23 @@ class _StaticsScreenState extends State<StaticsScreen> {
                       centerSpaceRadius: 70,
                       sectionsSpace: 5,
                       sections: [
-                        for (var i = 0; i < incCategories.length; i++)
+                        for (var i = 0; i < expCategories.length; i++)
                           PieChartSectionData(
-                            title: incCategories[i].name,
-                            color: colorList[i],
-                            value: transactions[i].amount,
+                            title: TransactionDB.instance
+                                .allIncomeAmount()
+                                .toString(),
+                            value: TransactionDB.instance.allIncomeAmount(),
+                            color: Colors.greenAccent,
                             radius: 40,
                           ),
+                        PieChartSectionData(
+                          title: TransactionDB.instance
+                              .allExpenseAmount()
+                              .toString(),
+                          value: TransactionDB.instance.allExpenseAmount(),
+                          color: Colors.red,
+                          radius: 40,
+                        ),
                       ],
                     ),
                   )),

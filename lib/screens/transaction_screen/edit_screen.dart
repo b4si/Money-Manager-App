@@ -1,11 +1,10 @@
-// ignore_for_file: unused_local_variable, no_leading_underscores_for_local_identifiers, must_be_immutable
+// ignore_for_file: unused_local_variable, no_leading_underscores_for_local_identifiers, must_be_immutable, unused_field
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../catagory_model/category_model.dart';
 import '../../db/category_db/category_db.dart';
 import '../../db/transaction_db/transaction_db.dart';
-import '../../transaction_model/transaction_model.dart';
 import '../form_screen/widget.dart';
 
 class EditScreen extends StatefulWidget {

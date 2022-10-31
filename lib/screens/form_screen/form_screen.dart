@@ -25,7 +25,7 @@ List<CategoryModel> incCategories =
     CategoryDB.instance.incomeCategoryListNotifier.value;
 
 List<CategoryModel> expCategories =
-    CategoryDB.instance.incomeCategoryListNotifier.value;
+    CategoryDB.instance.expenseCategoryListNotifier.value;
 
 final _formKey = GlobalKey<FormState>();
 
@@ -38,6 +38,7 @@ class _FormScreenState extends State<FormScreen> {
   @override
   void initState() {
     _selectedCategorytype = CategoryType.income;
+
     super.initState();
   }
 
@@ -153,16 +154,30 @@ class _FormScreenState extends State<FormScreen> {
                                     child: Form(
                                       key: _formKey,
                                       child: TextFormField(
+                                        textCapitalization:
+                                            TextCapitalization.sentences,
                                         validator: (value) {
                                           if (value!.isEmpty) {
                                             return 'Enter a Category name';
                                           } else {
                                             for (var i = 0;
-                                                i < transactions.value.length;
+                                                i < incCategories.length;
                                                 i++) {
                                               if (value.toLowerCase().trim() ==
-                                                  transactions
-                                                      .value[i].category.name
+                                                  incCategories[i]
+                                                      .name
+                                                      .toLowerCase()
+                                                      .trim()
+                                                      .toString()) {
+                                                return 'Already exist';
+                                              }
+                                            }
+                                            for (var i = 0;
+                                                i < expCategories.length;
+                                                i++) {
+                                              if (value.toLowerCase().trim() ==
+                                                  expCategories[i]
+                                                      .name
                                                       .toLowerCase()
                                                       .trim()) {
                                                 return 'Already exist';
@@ -255,6 +270,7 @@ class _FormScreenState extends State<FormScreen> {
               padding:
                   const EdgeInsets.only(top: 5, bottom: 5, right: 12, left: 12),
               child: TextFormField(
+                textCapitalization: TextCapitalization.sentences,
                 controller: notesController,
                 decoration: const InputDecoration(hintText: 'Notes'),
                 maxLength: 15,
@@ -271,7 +287,7 @@ class _FormScreenState extends State<FormScreen> {
                         context: context,
                         initialDate: DateTime.now(),
                         firstDate:
-                            DateTime.now().subtract(const Duration(days: 30)),
+                            DateTime.now().subtract(const Duration(days: 60)),
                         lastDate: DateTime.now(),
                       );
                       if (selectedDateTemp == null) {

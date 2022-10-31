@@ -2,6 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:money_manager/screens/transaction_screen/transaction_screen.dart';
 import 'package:money_manager/transaction_model/transaction_model.dart';
 
 import '../../catagory_model/category_model.dart';
@@ -12,6 +13,7 @@ abstract class TransactionDbFunctions {
   Future<void> addTransaction(TransactionModel obj);
   Future<List<TransactionModel>> getAllTransactions();
   Future<void> deleteTransaction(String transactionID);
+  Future<void> deleteAllTransactions();
   // Future<void> editTarsaction(index,String transactionID);
 }
 
@@ -25,6 +27,16 @@ class TransactionDB implements TransactionDbFunctions {
 
   ValueNotifier<List<TransactionModel>> transactionListNotifier =
       ValueNotifier([]);
+  ValueNotifier<List<TransactionModel>> incomeTransactionNotifier =
+      ValueNotifier([]);
+  ValueNotifier<List<TransactionModel>> expenseTransactionNotifier =
+      ValueNotifier([]);
+  ValueNotifier<List<TransactionModel>> todayTransactionNotifier =
+      ValueNotifier([]);
+  ValueNotifier<List<TransactionModel>> monthlyTransactionNotifier =
+      ValueNotifier([]);
+
+  ValueNotifier<List<TransactionModel>> tempNotifier = ValueNotifier([]);
 
   @override
   Future<void> addTransaction(TransactionModel obj) async {
@@ -35,20 +47,66 @@ class TransactionDB implements TransactionDbFunctions {
 
   Future<void> refresh() async {
     final _list = await getAllTransactions();
-    _list.sort((first, second) => second.date.compareTo(first.date));
+
     transactionListNotifier.value.clear();
+    incomeTransactionNotifier.value.clear();
+    expenseTransactionNotifier.value.clear();
+    tempNotifier.value.clear();
+
+    _list.sort((first, second) => second.date.compareTo(first.date));
 
     transactionListNotifier.value.addAll(_list);
 
     transactionListNotifier.notifyListeners();
+
+    await Future.forEach(
+      _list,
+      (TransactionModel transaction) {
+        if (transaction.type == CategoryType.income) {
+          incomeTransactionNotifier.value.add(transaction);
+        } else {
+          expenseTransactionNotifier.value.add(transaction);
+        }
+      },
+    );
+    incomeTransactionNotifier.notifyListeners();
+    expenseTransactionNotifier.notifyListeners();
+
+    todayTransactionNotifier.value.clear();
+    await Future.forEach(
+      _list,
+      (TransactionModel transaction) {
+        if (transaction.date ==
+            DateTime(DateTime.now().year, DateTime.now().month,
+                DateTime.now().day)) {
+          todayTransactionNotifier.value.add(transaction);
+        } else {
+          return;
+        }
+      },
+    );
+
+    todayTransactionNotifier.notifyListeners();
+
+    monthlyTransactionNotifier.value.clear();
+    await Future.forEach(
+      _list,
+      (TransactionModel transaction) {
+        if (transaction.date == DateTime(DateTime.daysPerWeek)) {
+          monthlyTransactionNotifier.value.add(transaction);
+        }
+      },
+    );
+    monthlyTransactionNotifier.notifyListeners();
   }
 
   double totalAmount() {
     double totalAmount = 0;
     for (var i = 0; i < transactionListNotifier.value.length; i++) {
       totalAmount = (allIncomeAmount() - allExpenseAmount());
+      refresh();
     }
-    refresh();
+
     return totalAmount;
   }
 
@@ -59,8 +117,8 @@ class TransactionDB implements TransactionDbFunctions {
           CategoryType.income) {
         totalIncomeAmount =
             totalIncomeAmount + transactionListNotifier.value[i].amount;
+        refresh();
       }
-      refresh();
     }
     return totalIncomeAmount;
   }
@@ -72,8 +130,8 @@ class TransactionDB implements TransactionDbFunctions {
           CategoryType.expense) {
         totalExpenseAmount =
             totalExpenseAmount + transactionListNotifier.value[i].amount;
+        refresh();
       }
-      refresh();
     }
     return totalExpenseAmount;
   }
@@ -88,6 +146,13 @@ class TransactionDB implements TransactionDbFunctions {
   Future<void> deleteTransaction(String transactionID) async {
     final _db = await Hive.openBox<TransactionModel>(transactionDbName);
     await _db.delete(transactionID);
+    refresh();
+  }
+
+  @override
+  Future<void> deleteAllTransactions() async {
+    final _db = await Hive.openBox<TransactionModel>(transactionDbName);
+    _db.clear();
     refresh();
   }
 }

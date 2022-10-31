@@ -42,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: const Color(0xFF15485D),
       ),
       body: PageView(
+        physics: const NeverScrollableScrollPhysics(),
         controller: pageController,
         children: [
           Column(
@@ -52,79 +53,90 @@ class _HomeScreenState extends State<HomeScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: const Color(0xFF15485D)),
-                    height: 100,
-                    width: 400,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            const Text(
-                              'Income',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white),
-                            ),
-                            Text(
-                              TransactionDB.instance
-                                  .allIncomeAmount()
-                                  .toString(),
-                              style: const TextStyle(
-                                  color: Colors.green,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            const Text(
-                              'Balance',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white),
-                            ),
-                            Text(
-                              TransactionDB.instance.totalAmount().toString(),
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            const Text(
-                              'Expense',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white),
-                            ),
-                            Text(
-                              TransactionDB.instance
-                                  .allExpenseAmount()
-                                  .toString(),
-                              style: const TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+                  child: ValueListenableBuilder(
+                      valueListenable:
+                          TransactionDB.instance.transactionListNotifier,
+                      builder: (BuildContext context,
+                          List<TransactionModel> newList, _) {
+                        return Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: const Color(0xFF15485D)),
+                          height: 100,
+                          width: 400,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  const Text(
+                                    'Income',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white),
+                                  ),
+                                  Text(
+                                    TransactionDB.instance
+                                        .allIncomeAmount()
+                                        .toString(),
+                                    style: const TextStyle(
+                                        color: Colors.green,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              ),
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  const Text(
+                                    'Balance',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white),
+                                  ),
+                                  Text(
+                                    TransactionDB.instance
+                                        .totalAmount()
+                                        .toString(),
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              ),
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  const Text(
+                                    'Expense',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white),
+                                  ),
+                                  Text(
+                                    TransactionDB.instance
+                                        .allExpenseAmount()
+                                        .toString(),
+                                    style: const TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
                 ),
               ),
               Padding(
