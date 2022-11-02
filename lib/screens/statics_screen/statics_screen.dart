@@ -22,10 +22,10 @@ class _StaticsScreenState extends State<StaticsScreen> {
     Colors.brown,
   ];
 
-  List<String> items = [
-    'Income',
-    'Expense',
-  ];
+  // List<String> items = [
+  //   'Income',
+  //   'Expense',
+  // ];
 
   List<TransactionModel> transactions =
       TransactionDB.instance.transactionListNotifier.value;
@@ -35,77 +35,113 @@ class _StaticsScreenState extends State<StaticsScreen> {
 
   List<CategoryModel> incCategories =
       CategoryDB.instance.incomeCategoryListNotifier.value;
+  double? totalIncomeAmount;
+  double? totalExpenseAmount;
 
-  String? selectedItem;
+  @override
+  void initState() {
+    totalIncomeAmount = TransactionDB.instance.allIncomeAmount();
+    totalExpenseAmount = TransactionDB.instance.allExpenseAmount();
+    super.initState();
+  }
+
+  int value1 = 1;
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         DropdownButton(
           borderRadius: BorderRadius.circular(18),
-          hint: const Text(
-            'Income',
-            style: TextStyle(color: Colors.black),
-          ),
-          value: selectedItem,
-          items: items.map((item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(item),
-            );
-          }).toList(),
-          onChanged: (item) {
-            setState(() {
-              selectedItem = item;
-            });
+          value: value1,
+          items: [
+            DropdownMenuItem(
+              value: 1,
+              onTap: () {
+                setState(() {
+                  totalIncomeAmount = TransactionDB.instance.allIncomeAmount();
+                  totalExpenseAmount =
+                      TransactionDB.instance.allExpenseAmount();
+                });
+              },
+              child: const Text('Total'),
+            ),
+            DropdownMenuItem(
+              value: 2,
+              onTap: () {
+                setState(() {
+                  totalIncomeAmount =
+                      TransactionDB.instance.alltodayIncomeAmount();
+                  totalExpenseAmount =
+                      TransactionDB.instance.alltodayExpenseAmount();
+                });
+              },
+              child: const Text('Today'),
+            ),
+            DropdownMenuItem(
+              value: 3,
+              onTap: () {},
+              child: const Text('Monthly'),
+            ),
+          ],
+          onChanged: (value) {
+            value1 = value!;
           },
         ),
         Expanded(
-            child: selectedItem == items[1]
-                ? PieChart(
-                    swapAnimationCurve: Curves.linear,
-                    PieChartData(
-                      centerSpaceRadius: 70,
-                      sectionsSpace: 5,
-                      sections: [
-                        for (var i = 0; i < incCategories.length; i++)
-                          PieChartSectionData(
-                            title: TransactionDB.instance
-                                .incomeTransactionNotifier.value[i].amount
-                                .toString(),
-                            color: colorList[i],
-                            value: TransactionDB.instance
-                                .incomeTransactionNotifier.value[i].amount,
-                            radius: 40,
-                          ),
-                      ],
-                    ),
+          child: PieChart(
+            PieChartData(
+              centerSpaceRadius: 70,
+              sectionsSpace: 5,
+              sections: [
+                PieChartSectionData(
+                  title: totalIncomeAmount.toString(),
+                  value: totalIncomeAmount,
+                  color: Colors.greenAccent,
+                  radius: 40,
+                ),
+                PieChartSectionData(
+                  title: totalExpenseAmount.toString(),
+                  value: totalExpenseAmount,
+                  color: Colors.redAccent,
+                  radius: 40,
+                ),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 150),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  CircleAvatar(
+                    backgroundColor: Colors.greenAccent,
+                    radius: 10.0,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('Income'),
                   )
-                : PieChart(
-                    PieChartData(
-                      centerSpaceRadius: 70,
-                      sectionsSpace: 5,
-                      sections: [
-                        for (var i = 0; i < expCategories.length; i++)
-                          PieChartSectionData(
-                            title: TransactionDB.instance
-                                .allIncomeAmount()
-                                .toString(),
-                            value: TransactionDB.instance.allIncomeAmount(),
-                            color: Colors.greenAccent,
-                            radius: 40,
-                          ),
-                        PieChartSectionData(
-                          title: TransactionDB.instance
-                              .allExpenseAmount()
-                              .toString(),
-                          value: TransactionDB.instance.allExpenseAmount(),
-                          color: Colors.red,
-                          radius: 40,
-                        ),
-                      ],
-                    ),
-                  )),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  CircleAvatar(
+                    backgroundColor: Colors.redAccent,
+                    radius: 10.0,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(5.0),
+                    child: Text('Expense'),
+                  )
+                ],
+              ),
+            ],
+          ),
+        )
       ],
     );
   }

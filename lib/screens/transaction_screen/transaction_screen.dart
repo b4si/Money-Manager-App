@@ -1,4 +1,5 @@
 // ignore_for_file: unused_local_variable, override_on_non_overriding_member, unused_field
+
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../catagory_model/category_model.dart';
@@ -130,6 +131,7 @@ class TransactionScreenState extends State<TransactionScreen> {
                   child: const Text('All'),
                   onTap: () {
                     setState(() {
+                      _value4 = 1;
                       foundTransactions = transactions;
                     });
                   },
@@ -139,6 +141,7 @@ class TransactionScreenState extends State<TransactionScreen> {
                   child: const Text('Today'),
                   onTap: () {
                     setState(() {
+                      _value4 = 1;
                       foundTransactions =
                           TransactionDB.instance.todayTransactionNotifier.value;
                     });
@@ -146,12 +149,22 @@ class TransactionScreenState extends State<TransactionScreen> {
                 ),
                 DropdownMenuItem(
                   value: 3,
-                  child: const Text('Monthly'),
+                  child: const Text(
+                    'Monthly',
+                  ),
                   onTap: () {
-                    setState(() {
-                      foundTransactions = TransactionDB
-                          .instance.monthlyTransactionNotifier.value;
-                    });
+                    _value4 = 1;
+
+                    foundTransactions =
+                        TransactionDB.instance.monthlyTransactionNotifier.value;
+                  },
+                ),
+                DropdownMenuItem(
+                  value: 4,
+                  child: const Text('Custom'),
+                  onTap: () {
+                    _value4 = 1;
+                    pickDateRange();
                   },
                 ),
               ],
@@ -277,6 +290,24 @@ class TransactionScreenState extends State<TransactionScreen> {
         ],
       ),
     );
+  }
+
+  Future pickDateRange() async {
+    DateTimeRange? newDateRange = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2023),
+    );
+    return newDateRange;
+  }
+
+  Future checkCustomDate() async {
+    for (var i = 0; i < transactions.length; i++) {
+      if (transactions[i].date == pickDateRange()) {
+        foundTransactions = transactions;
+      }
+    }
+    return foundTransactions;
   }
 }
 

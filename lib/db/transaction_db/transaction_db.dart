@@ -1,8 +1,8 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers, invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:money_manager/screens/transaction_screen/transaction_screen.dart';
 import 'package:money_manager/transaction_model/transaction_model.dart';
 
 import '../../catagory_model/category_model.dart';
@@ -36,8 +36,6 @@ class TransactionDB implements TransactionDbFunctions {
   ValueNotifier<List<TransactionModel>> monthlyTransactionNotifier =
       ValueNotifier([]);
 
-  ValueNotifier<List<TransactionModel>> tempNotifier = ValueNotifier([]);
-
   @override
   Future<void> addTransaction(TransactionModel obj) async {
     final _db = await Hive.openBox<TransactionModel>(transactionDbName);
@@ -51,7 +49,6 @@ class TransactionDB implements TransactionDbFunctions {
     transactionListNotifier.value.clear();
     incomeTransactionNotifier.value.clear();
     expenseTransactionNotifier.value.clear();
-    tempNotifier.value.clear();
 
     _list.sort((first, second) => second.date.compareTo(first.date));
 
@@ -92,7 +89,8 @@ class TransactionDB implements TransactionDbFunctions {
     await Future.forEach(
       _list,
       (TransactionModel transaction) {
-        if (transaction.date == DateTime(DateTime.daysPerWeek)) {
+        if (transaction.date ==
+            DateTime(DateTime.now().year, DateTime.now().month, 1, 2)) {
           monthlyTransactionNotifier.value.add(transaction);
         }
       },
@@ -108,6 +106,32 @@ class TransactionDB implements TransactionDbFunctions {
     }
 
     return totalAmount;
+  }
+
+  double alltodayIncomeAmount() {
+    double allTodayIncomeamount = 0;
+    for (var i = 0; i < incomeTransactionNotifier.value.length; i++) {
+      if (incomeTransactionNotifier.value[i].date ==
+          DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day)) {
+        allTodayIncomeamount =
+            allTodayIncomeamount + incomeTransactionNotifier.value[i].amount;
+      }
+    }
+    return allTodayIncomeamount;
+  }
+
+  double alltodayExpenseAmount() {
+    double allTodayExpenseamount = 0;
+    for (var i = 0; i < expenseTransactionNotifier.value.length; i++) {
+      if (expenseTransactionNotifier.value[i].date ==
+          DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day)) {
+        allTodayExpenseamount =
+            allTodayExpenseamount + incomeTransactionNotifier.value[i].amount;
+      }
+    }
+    return allTodayExpenseamount;
   }
 
   double allIncomeAmount() {

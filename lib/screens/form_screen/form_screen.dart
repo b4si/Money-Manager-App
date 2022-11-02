@@ -57,266 +57,301 @@ class _FormScreenState extends State<FormScreen> {
         title: const Text('Add transactions'),
         backgroundColor: const Color(0xFF15485D),
       ),
-      body: SizedBox(
-        width: 400,
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Row(
-                  children: [
-                    Radio(
-                      value: CategoryType.income,
-                      groupValue: _selectedCategorytype,
-                      onChanged: (newValue) {
-                        setState(() {
-                          _selectedCategorytype = CategoryType.income;
-                          _categoryID = null;
-                        });
-                      },
-                    ),
-                    const Text('Income')
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio(
-                      value: CategoryType.expense,
-                      groupValue: _selectedCategorytype,
-                      onChanged: (newValue) {
-                        setState(() {
-                          _selectedCategorytype = CategoryType.expense;
-                          _categoryID = null;
-                        });
-                      },
-                    ),
-                    const Text('Expense'),
-                  ],
-                )
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 12.0, right: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            SizedBox(
+              width: 400,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  DropdownButton<String>(
-                    value: _categoryID,
-                    hint: const Text('Select category'),
-                    items: (_selectedCategorytype == CategoryType.income
-                            ? CategoryDB().incomeCategoryListNotifier
-                            : CategoryDB().expenseCategoryListNotifier)
-                        .value
-                        .map(
-                      (e) {
-                        return DropdownMenuItem(
-                          value: e.id,
-                          child: Text(e.name),
-                          onTap: () {
-                            _selectedCategoryModel = e;
-                          },
-                        );
-                      },
-                    ).toList(),
-                    onChanged: (selectedValue) {
-                      setState(
-                        () {
-                          _categoryID = selectedValue;
-                        },
-                      );
-                    },
-                    onTap: () {},
-                  ),
-                  IconButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20),
-                            ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Row(
+                        children: [
+                          Radio(
+                            value: CategoryType.income,
+                            groupValue: _selectedCategorytype,
+                            onChanged: (newValue) {
+                              setState(() {
+                                _selectedCategorytype = CategoryType.income;
+                                _categoryID = null;
+                              });
+                            },
                           ),
-                          builder: (ctx) {
-                            return Center(
-                              child: Column(
-                                children: [
-                                  const Padding(
-                                    padding: EdgeInsets.all(15.0),
-                                    child: Text(
-                                      "Add category",
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Form(
-                                      key: _formKey,
-                                      child: TextFormField(
-                                        textCapitalization:
-                                            TextCapitalization.sentences,
-                                        validator: (value) {
-                                          if (value!.isEmpty) {
-                                            return 'Enter a Category name';
-                                          } else {
-                                            for (var i = 0;
-                                                i < incCategories.length;
-                                                i++) {
-                                              if (value.toLowerCase().trim() ==
-                                                  incCategories[i]
-                                                      .name
-                                                      .toLowerCase()
-                                                      .trim()
-                                                      .toString()) {
-                                                return 'Already exist';
-                                              }
-                                            }
-                                            for (var i = 0;
-                                                i < expCategories.length;
-                                                i++) {
-                                              if (value.toLowerCase().trim() ==
-                                                  expCategories[i]
-                                                      .name
-                                                      .toLowerCase()
-                                                      .trim()) {
-                                                return 'Already exist';
-                                              }
-                                            }
-                                          }
-                                          return null;
-                                        },
-                                        controller: nameEditingController,
-                                        decoration: const InputDecoration(
-                                          labelText: 'category name',
-                                        ),
-                                        maxLength: 10,
-                                      ),
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                          const Text('Income')
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Radio(
+                            value: CategoryType.expense,
+                            groupValue: _selectedCategorytype,
+                            onChanged: (newValue) {
+                              setState(() {
+                                _selectedCategorytype = CategoryType.expense;
+                                _categoryID = null;
+                              });
+                            },
+                          ),
+                          const Text('Expense'),
+                        ],
+                      )
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      DropdownButton<String>(
+                        elevation: 1,
+                        underline: Container(),
+                        dropdownColor: Colors.blueGrey[100],
+                        value: _categoryID,
+                        hint: const Text('Select category'),
+                        items: (_selectedCategorytype == CategoryType.income
+                                ? CategoryDB().incomeCategoryListNotifier
+                                : CategoryDB().expenseCategoryListNotifier)
+                            .value
+                            .map(
+                          (e) {
+                            return DropdownMenuItem(
+                              value: e.id,
+                              child: Text(e.name),
+                              onTap: () {
+                                _selectedCategoryModel = e;
+                              },
+                            );
+                          },
+                        ).toList(),
+                        onChanged: (selectedValue) {
+                          setState(
+                            () {
+                              _categoryID = selectedValue;
+                            },
+                          );
+                        },
+                        onTap: () {},
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            showModalBottomSheet(
+                              backgroundColor: Colors.white,
+                              context: context,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20),
+                                ),
+                              ),
+                              builder: (ctx) {
+                                return Center(
+                                  child: Column(
                                     children: [
+                                      const Padding(
+                                        padding: EdgeInsets.all(15.0),
+                                        child: Text(
+                                          "Add category",
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Form(
+                                          key: _formKey,
+                                          child: TextFormField(
+                                            textCapitalization:
+                                                TextCapitalization.sentences,
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return 'Enter a Category name';
+                                              } else {
+                                                for (var i = 0;
+                                                    i < incCategories.length;
+                                                    i++) {
+                                                  if (value
+                                                          .toLowerCase()
+                                                          .trim() ==
+                                                      incCategories[i]
+                                                          .name
+                                                          .toLowerCase()
+                                                          .trim()
+                                                          .toString()) {
+                                                    return 'Already exist';
+                                                  }
+                                                }
+                                                for (var i = 0;
+                                                    i < expCategories.length;
+                                                    i++) {
+                                                  if (value
+                                                          .toLowerCase()
+                                                          .trim() ==
+                                                      expCategories[i]
+                                                          .name
+                                                          .toLowerCase()
+                                                          .trim()) {
+                                                    return 'Already exist';
+                                                  }
+                                                }
+                                              }
+                                              return null;
+                                            },
+                                            controller: nameEditingController,
+                                            decoration: const InputDecoration(
+                                              labelText: 'category name',
+                                            ),
+                                            maxLength: 10,
+                                          ),
+                                        ),
+                                      ),
                                       Row(
-                                        children: const [
-                                          RadioButton(
-                                            title: 'Income',
-                                            type: CategoryType.income,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Row(
+                                            children: const [
+                                              RadioButton(
+                                                title: 'Income',
+                                                type: CategoryType.income,
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: const [
+                                              RadioButton(
+                                                title: 'Expense',
+                                                type: CategoryType.expense,
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
-                                      Row(
-                                        children: const [
-                                          RadioButton(
-                                            title: 'Expense',
-                                            type: CategoryType.expense,
-                                          ),
-                                        ],
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          final name =
+                                              nameEditingController.text;
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            final type =
+                                                selectedCategoryNotifier.value;
+                                            final category = CategoryModel(
+                                              id: DateTime.now()
+                                                  .millisecondsSinceEpoch
+                                                  .toString(),
+                                              name: name,
+                                              type: type,
+                                            );
+                                            CategoryDB()
+                                                .insertCategory(category);
+                                            Navigator.of(context).pop();
+                                            setState(() {
+                                              CategoryDB.instance.refreshUI();
+                                            });
+                                            nameEditingController.clear();
+                                          }
+                                        },
+                                        child: const Text('Save'),
                                       ),
                                     ],
                                   ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      final name = nameEditingController.text;
-                                      if (_formKey.currentState!.validate()) {
-                                        final type =
-                                            selectedCategoryNotifier.value;
-                                        final category = CategoryModel(
-                                          id: DateTime.now()
-                                              .millisecondsSinceEpoch
-                                              .toString(),
-                                          name: name,
-                                          type: type,
-                                        );
-                                        CategoryDB().insertCategory(category);
-                                        Navigator.of(context).pop();
-                                        setState(() {
-                                          CategoryDB.instance.refreshUI();
-                                        });
-                                        nameEditingController.clear();
-                                      }
-                                    },
-                                    child: const Text('Save'),
-                                  ),
-                                ],
-                              ),
+                                );
+                              },
                             );
                           },
-                        );
-                      },
-                      icon: const Icon(Icons.add)),
-                ],
-              ),
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.only(top: 5, bottom: 5, right: 12, left: 12),
-              child: TextFormField(
-                controller: amountController,
-                decoration: const InputDecoration(hintText: 'Amount'),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                maxLength: 8,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(
-                    RegExp('[0-9.]'),
+                          icon: const Icon(Icons.add)),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.only(top: 5, bottom: 5, right: 12, left: 12),
-              child: TextFormField(
-                textCapitalization: TextCapitalization.sentences,
-                controller: notesController,
-                decoration: const InputDecoration(hintText: 'Notes'),
-                maxLength: 15,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 8, left: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  TextButton.icon(
-                    onPressed: () async {
-                      final selectedDateTemp = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate:
-                            DateTime.now().subtract(const Duration(days: 60)),
-                        lastDate: DateTime.now(),
-                      );
-                      if (selectedDateTemp == null) {
-                        return;
-                      } else {
-                        setState(() {
-                          _selectedDate = selectedDateTemp;
-                        });
-                      }
-                    },
-                    icon: const Icon(Icons.calendar_month),
-                    label: Text(
-                      _selectedDate == null
-                          ? 'Select date'
-                          : ('${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 5, bottom: 5, right: 12, left: 12),
+                    child: TextFormField(
+                      controller: amountController,
+                      decoration: InputDecoration(
+                        hintText: 'Amount',
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 2, color: Colors.blueGrey),
+                            borderRadius: BorderRadius.circular(35)),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      maxLength: 8,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp('[0-9.]'),
+                        ),
+                      ],
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 5, bottom: 5, right: 12, left: 12),
+                    child: TextFormField(
+                      textCapitalization: TextCapitalization.sentences,
+                      controller: notesController,
+                      decoration: InputDecoration(
+                        hintText: 'Notes',
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              width: 2, color: Colors.blueGrey),
+                          borderRadius: BorderRadius.circular(35),
+                        ),
+                      ),
+                      maxLength: 15,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8, left: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton.icon(
+                          onPressed: () async {
+                            final selectedDateTemp = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime.now()
+                                  .subtract(const Duration(days: 60)),
+                              lastDate: DateTime.now(),
+                            );
+                            if (selectedDateTemp == null) {
+                              return;
+                            } else {
+                              setState(() {
+                                _selectedDate = selectedDateTemp;
+                              });
+                            }
+                          },
+                          icon: const Icon(Icons.calendar_month),
+                          label: Text(
+                            _selectedDate == null
+                                ? 'Select date'
+                                : ('${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(),
+                          onPressed: () {
+                            checkAmount();
+                            setState(() {
+                              TransactionDB.instance.refresh();
+                            });
+                          },
+                          child: const Text('Submit')),
+                    ),
+                  )
                 ],
               ),
             ),
-            ElevatedButton(
-                style: ElevatedButton.styleFrom(),
-                onPressed: () {
-                  checkAmount();
-                  setState(() {
-                    TransactionDB.instance.refresh();
-                  });
-                },
-                child: const Text('Submit'))
           ],
         ),
       ),
