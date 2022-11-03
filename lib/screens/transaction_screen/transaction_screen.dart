@@ -86,93 +86,110 @@ class TransactionScreenState extends State<TransactionScreen> {
       body: Column(
         children: [
           ListTile(
-            leading: DropdownButton(
-              value: _value4,
-              items: [
-                DropdownMenuItem(
-                  value: 1,
-                  child: const Text('All'),
-                  onTap: () {
-                    setState(() {
-                      foundTransactions = transactions;
-                    });
-                  },
-                ),
-                DropdownMenuItem(
-                  value: 2,
-                  child: const Text('Income'),
-                  onTap: () {
-                    setState(() {
-                      foundTransactions = TransactionDB
-                          .instance.incomeTransactionNotifier.value;
-                    });
-                  },
-                ),
-                DropdownMenuItem(
-                  value: 3,
-                  child: const Text('Expense'),
-                  onTap: () {
-                    setState(() {
-                      foundTransactions = TransactionDB
-                          .instance.expenseTransactionNotifier.value;
-                    });
-                  },
-                ),
-              ],
-              onChanged: ((value) {
-                _value4 = value!;
-              }),
-            ),
-            trailing: DropdownButton(
-              value: _value2,
-              items: [
-                DropdownMenuItem(
-                  value: 1,
-                  child: const Text('All'),
-                  onTap: () {
-                    setState(() {
-                      _value4 = 1;
-                      foundTransactions = transactions;
-                    });
-                  },
-                ),
-                DropdownMenuItem(
-                  value: 2,
-                  child: const Text('Today'),
-                  onTap: () {
-                    setState(() {
-                      _value4 = 1;
-                      foundTransactions =
-                          TransactionDB.instance.todayTransactionNotifier.value;
-                    });
-                  },
-                ),
-                DropdownMenuItem(
-                  value: 3,
-                  child: const Text(
-                    'Monthly',
+            leading: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DropdownButton(
+                elevation: 1,
+                borderRadius: BorderRadius.circular(18),
+                dropdownColor: Colors.blueGrey[100],
+                underline: Container(),
+                value: _value4,
+                items: [
+                  DropdownMenuItem(
+                    value: 1,
+                    child: const Text('All'),
+                    onTap: () {
+                      setState(() {
+                        _value2 = 1;
+                        foundTransactions = transactions;
+                      });
+                    },
                   ),
-                  onTap: () {
-                    _value4 = 1;
+                  DropdownMenuItem(
+                    value: 2,
+                    child: const Text('Income'),
+                    onTap: () {
+                      setState(() {
+                        _value2 = 1;
+                        foundTransactions = TransactionDB
+                            .instance.incomeTransactionNotifier.value;
+                      });
+                    },
+                  ),
+                  DropdownMenuItem(
+                    value: 3,
+                    child: const Text('Expense'),
+                    onTap: () {
+                      setState(() {
+                        _value2 = 1;
+                        foundTransactions = TransactionDB
+                            .instance.expenseTransactionNotifier.value;
+                      });
+                    },
+                  ),
+                ],
+                onChanged: ((value) {
+                  _value4 = value!;
+                }),
+              ),
+            ),
+            trailing: Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: DropdownButton(
+                elevation: 1,
+                dropdownColor: Colors.blueGrey[100],
+                borderRadius: BorderRadius.circular(18),
+                underline: Container(),
+                value: _value2,
+                items: [
+                  DropdownMenuItem(
+                    value: 1,
+                    child: const Text('All'),
+                    onTap: () {
+                      setState(() {
+                        _value4 = 1;
+                        foundTransactions = transactions;
+                      });
+                    },
+                  ),
+                  DropdownMenuItem(
+                    value: 2,
+                    child: const Text('Today'),
+                    onTap: () {
+                      setState(() {
+                        _value4 = 1;
+                        foundTransactions = TransactionDB
+                            .instance.todayTransactionNotifier.value;
+                      });
+                    },
+                  ),
+                  DropdownMenuItem(
+                    value: 3,
+                    child: const Text(
+                      'Monthly',
+                    ),
+                    onTap: () {
+                      _value4 = 1;
 
-                    foundTransactions =
-                        TransactionDB.instance.monthlyTransactionNotifier.value;
-                  },
-                ),
-                DropdownMenuItem(
-                  value: 4,
-                  child: const Text('Custom'),
-                  onTap: () {
-                    _value4 = 1;
-                    pickDateRange();
-                  },
-                ),
-              ],
-              onChanged: ((value) {
-                setState(() {
-                  _value2 = value!;
-                });
-              }),
+                      foundTransactions = TransactionDB
+                          .instance.monthlyTransactionNotifier.value;
+                    },
+                  ),
+                  DropdownMenuItem(
+                    value: 4,
+                    child: const Text('Custom'),
+                    onTap: () {
+                      _value4 = 1;
+                      pickDateRange();
+                    },
+                  ),
+                ],
+                onChanged: ((value) {
+                  setState(() {
+                    _value2 = value!;
+                  });
+                }),
+              ),
             ),
           ),
           Expanded(

@@ -90,7 +90,10 @@ class TransactionDB implements TransactionDbFunctions {
       _list,
       (TransactionModel transaction) {
         if (transaction.date ==
-            DateTime(DateTime.now().year, DateTime.now().month, 1, 2)) {
+            DateTime(
+              DateTime.now().year,
+              DateTime.now().month,
+            )) {
           monthlyTransactionNotifier.value.add(transaction);
         }
       },

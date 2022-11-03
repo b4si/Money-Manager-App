@@ -13,18 +13,13 @@ class StaticsScreen extends StatefulWidget {
 }
 
 class _StaticsScreenState extends State<StaticsScreen> {
-  List<Color> colorList = [
-    Colors.red,
-    Colors.greenAccent,
-    Colors.blue,
-    Colors.yellow,
-    Colors.purpleAccent,
-    Colors.brown,
-  ];
-
-  // List<String> items = [
-  //   'Income',
-  //   'Expense',
+  // List<Color> colorList = [
+  //   Colors.red,
+  //   Colors.greenAccent,
+  //   Colors.blue,
+  //   Colors.yellow,
+  //   Colors.purpleAccent,
+  //   Colors.brown,
   // ];
 
   List<TransactionModel> transactions =
@@ -45,13 +40,17 @@ class _StaticsScreenState extends State<StaticsScreen> {
     super.initState();
   }
 
+  int? touchedIndex;
   int value1 = 1;
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         DropdownButton(
+          elevation: 1,
+          dropdownColor: Colors.blueGrey[100],
           borderRadius: BorderRadius.circular(18),
+          underline: Container(),
           value: value1,
           items: [
             DropdownMenuItem(
@@ -63,7 +62,10 @@ class _StaticsScreenState extends State<StaticsScreen> {
                       TransactionDB.instance.allExpenseAmount();
                 });
               },
-              child: const Text('Total'),
+              child: const Text(
+                'Total',
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+              ),
             ),
             DropdownMenuItem(
               value: 2,
@@ -75,12 +77,14 @@ class _StaticsScreenState extends State<StaticsScreen> {
                       TransactionDB.instance.alltodayExpenseAmount();
                 });
               },
-              child: const Text('Today'),
+              child: const Text('Today',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18)),
             ),
             DropdownMenuItem(
               value: 3,
               onTap: () {},
-              child: const Text('Monthly'),
+              child: const Text('Monthly',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18)),
             ),
           ],
           onChanged: (value) {
@@ -90,20 +94,20 @@ class _StaticsScreenState extends State<StaticsScreen> {
         Expanded(
           child: PieChart(
             PieChartData(
-              centerSpaceRadius: 70,
-              sectionsSpace: 5,
+              centerSpaceRadius: 0,
+              sectionsSpace: 8,
               sections: [
                 PieChartSectionData(
                   title: totalIncomeAmount.toString(),
                   value: totalIncomeAmount,
                   color: Colors.greenAccent,
-                  radius: 40,
+                  radius: 120,
                 ),
                 PieChartSectionData(
                   title: totalExpenseAmount.toString(),
                   value: totalExpenseAmount,
                   color: Colors.redAccent,
-                  radius: 40,
+                  radius: 120,
                 ),
               ],
             ),
