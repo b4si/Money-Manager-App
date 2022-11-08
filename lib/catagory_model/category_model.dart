@@ -19,6 +19,7 @@ class CategoryModel {
 
   @HiveField(2)
   final bool isDeleted;
+
   @HiveField(3)
   final CategoryType type;
 

@@ -6,7 +6,7 @@ import 'package:money_manager/db/category_db/category_db.dart';
 import 'package:money_manager/db/transaction_db/transaction_db.dart';
 import 'package:money_manager/transaction_model/transaction_model.dart';
 import '../../catagory_model/category_model.dart';
-import 'widget.dart';
+import 'radio_button.dart';
 
 class FormScreen extends StatefulWidget {
   const FormScreen({super.key});
@@ -38,7 +38,6 @@ class _FormScreenState extends State<FormScreen> {
   @override
   void initState() {
     _selectedCategorytype = CategoryType.income;
-
     super.initState();
   }
 
@@ -65,6 +64,8 @@ class _FormScreenState extends State<FormScreen> {
             SizedBox(
               width: 400,
               child: Column(
+                //Income Expense radio button for adding Transactions------>
+
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Row(
@@ -105,6 +106,8 @@ class _FormScreenState extends State<FormScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      //Dropdown for selecting the category----->
+
                       DropdownButton<String>(
                         elevation: 1,
                         underline: Container(),
@@ -136,6 +139,9 @@ class _FormScreenState extends State<FormScreen> {
                         onTap: () {},
                       ),
                       IconButton(
+
+                          //Modal sheet for adding category------>
+
                           onPressed: () {
                             showModalBottomSheet(
                               backgroundColor: Colors.white,
@@ -206,6 +212,8 @@ class _FormScreenState extends State<FormScreen> {
                                         ),
                                       ),
                                       Row(
+                                        //Radio button for adding category---->
+
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceEvenly,
                                         children: [
@@ -227,6 +235,9 @@ class _FormScreenState extends State<FormScreen> {
                                           ),
                                         ],
                                       ),
+
+                                      //For saving categories------->
+
                                       ElevatedButton(
                                         onPressed: () {
                                           final name =
@@ -262,6 +273,9 @@ class _FormScreenState extends State<FormScreen> {
                           icon: const Icon(Icons.add)),
                     ],
                   ),
+
+                  //Amount textfield------->
+
                   Padding(
                     padding: const EdgeInsets.only(
                         top: 5, bottom: 5, right: 12, left: 12),
@@ -285,6 +299,9 @@ class _FormScreenState extends State<FormScreen> {
                       ],
                     ),
                   ),
+
+                  //Notes textfield------->
+
                   Padding(
                     padding: const EdgeInsets.only(
                         top: 5, bottom: 5, right: 12, left: 12),
@@ -302,6 +319,9 @@ class _FormScreenState extends State<FormScreen> {
                       maxLength: 15,
                     ),
                   ),
+
+                  //Datepicker------->
+
                   Padding(
                     padding: const EdgeInsets.only(right: 8, left: 8),
                     child: Row(
@@ -334,6 +354,9 @@ class _FormScreenState extends State<FormScreen> {
                       ],
                     ),
                   ),
+
+                  //Transaction submit button------>
+
                   Padding(
                     padding: const EdgeInsets.only(left: 16, right: 16),
                     child: SizedBox(
@@ -357,6 +380,8 @@ class _FormScreenState extends State<FormScreen> {
       ),
     );
   }
+
+  //Function for checking and adding Transactions------>
 
   void checkAmount() {
     final amountCheck = amountController.text.trim();
@@ -401,6 +426,8 @@ class _FormScreenState extends State<FormScreen> {
       );
     }
   }
+
+  //Function for adding transaction----->
 
   Future<void> addtransaction() async {
     final _amountText = amountController.text;

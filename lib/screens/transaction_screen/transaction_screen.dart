@@ -18,13 +18,14 @@ class TransactionScreenState extends State<TransactionScreen> {
       TransactionDB.instance.transactionListNotifier.value;
 
   List<TransactionModel> foundTransactions = [];
-
+  List<TransactionModel> dateRangetansactions = [];
   @override
   void initState() {
     foundTransactions = transactions;
-
     super.initState();
   }
+
+  //Search Function------->
 
   void runFilter(String enteredKeyword) {
     List<TransactionModel> results = [];
@@ -44,23 +45,6 @@ class TransactionScreenState extends State<TransactionScreen> {
     });
   }
 
-  // void todaysdate(String selecteddate) {
-  //   List<TransactionModel> results = [];
-  //   if (selecteddate == DateTime.now().day) {
-  //     results = transactions;
-  //   }
-  //   setState(() {
-  //     foundTransactions = results;
-  //   });
-  // }
-
-  void monthlyTransactionList() {
-    List<TransactionModel> results = [];
-    for (var i = 0; i < transactions.length; i++) {
-      if (transactions[i].date == DateTime.now()) {}
-    }
-  }
-
   @override
   final TextEditingController _searchController = TextEditingController();
   String? selectedItem;
@@ -69,16 +53,20 @@ class TransactionScreenState extends State<TransactionScreen> {
   int? _value3;
   int _value4 = 1;
 
-  List<String> items = [
-    'All',
-    'Income',
-    'Expense',
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              pickDateRange();
+            },
+            icon: const Icon(
+              Icons.calendar_month,
+            ),
+          ),
+        ],
         centerTitle: true,
         title: const Text('Transactions'),
         backgroundColor: const Color(0xFF15485D),
@@ -88,6 +76,9 @@ class TransactionScreenState extends State<TransactionScreen> {
           ListTile(
             leading: Padding(
               padding: const EdgeInsets.all(8.0),
+
+              //Dropdown button for all,income,expense------->
+
               child: DropdownButton(
                 elevation: 1,
                 borderRadius: BorderRadius.circular(18),
@@ -135,6 +126,9 @@ class TransactionScreenState extends State<TransactionScreen> {
             ),
             trailing: Padding(
               padding: const EdgeInsets.only(right: 8),
+
+              //Dropdown Button for all,today,monthly----->
+
               child: DropdownButton(
                 elevation: 1,
                 dropdownColor: Colors.blueGrey[100],
@@ -177,10 +171,11 @@ class TransactionScreenState extends State<TransactionScreen> {
                   ),
                   DropdownMenuItem(
                     value: 4,
-                    child: const Text('Custom'),
+                    child: const Text('Yearly'),
                     onTap: () {
                       _value4 = 1;
-                      pickDateRange();
+                      foundTransactions = TransactionDB
+                          .instance.yearlyTransactionNotifier.value;
                     },
                   ),
                 ],
@@ -192,6 +187,9 @@ class TransactionScreenState extends State<TransactionScreen> {
               ),
             ),
           ),
+
+          //Search field------->
+
           Expanded(
             child: Column(
               children: [
@@ -244,28 +242,34 @@ class TransactionScreenState extends State<TransactionScreen> {
                                   context: context,
                                   builder: ((context) {
                                     return SimpleDialog(
-                                        contentPadding:
-                                            const EdgeInsets.all(18),
-                                        title: const Text('Details'),
-                                        children: [
-                                          Text(
-                                              'Category : ${transactionList.category.name}'),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          Text(
-                                              'Amount   : ${transactionList.amount}'),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          Text(
-                                              'Date         : ${parseDate(transactionList.date)}'),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          Text(
-                                              'Notes       : ${transactionList.notes}'),
-                                        ]);
+                                      contentPadding: const EdgeInsets.all(18),
+                                      title: const Text('Details'),
+                                      children: [
+                                        Text(
+                                          'Category : ${transactionList.category.name}',
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          'Amount   : ${transactionList.amount}',
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          'Date         : ${parseDate(
+                                            transactionList.date,
+                                          )}',
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          'Notes       : ${transactionList.notes}',
+                                        ),
+                                      ],
+                                    );
                                   }),
                                 );
                               },
@@ -273,17 +277,20 @@ class TransactionScreenState extends State<TransactionScreen> {
                               subtitle: Text(
                                 parseDate(transactionList.date),
                               ),
-                              trailing: transactionList.type ==
-                                      CategoryType.income
-                                  ? Text(
-                                      '₹${transactionList.amount.toString()}',
-                                      style:
-                                          const TextStyle(color: Colors.green),
-                                    )
-                                  : Text(
-                                      '₹${transactionList.amount.toString()}',
-                                      style: const TextStyle(color: Colors.red),
-                                    ),
+                              trailing:
+                                  transactionList.type == CategoryType.income
+                                      ? Text(
+                                          '₹${transactionList.amount.toString()}',
+                                          style: const TextStyle(
+                                            color: Colors.green,
+                                          ),
+                                        )
+                                      : Text(
+                                          '₹${transactionList.amount.toString()}',
+                                          style: const TextStyle(
+                                            color: Colors.red,
+                                          ),
+                                        ),
                             ),
                           );
                         }),
@@ -312,19 +319,43 @@ class TransactionScreenState extends State<TransactionScreen> {
   Future pickDateRange() async {
     DateTimeRange? newDateRange = await showDateRangePicker(
       context: context,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2023),
+      firstDate: DateTime(2021),
+      lastDate: DateTime(2050),
     );
-    return newDateRange;
-  }
-
-  Future checkCustomDate() async {
-    for (var i = 0; i < transactions.length; i++) {
-      if (transactions[i].date == pickDateRange()) {
-        foundTransactions = transactions;
+    if (newDateRange == null) {
+      return;
+    } else {
+      for (int i = 0; i < transactions.length; i++) {
+        if (transactions[i].date.isAfter(newDateRange.start) &&
+            transactions[i].date.isBefore(newDateRange.end)) {
+          dateRangetansactions = transactions;
+        }
       }
     }
-    return foundTransactions;
+    print(dateRangetansactions);
+    return showModalBottomSheet(
+      context: context,
+      builder: ((context) {
+        return ListView.separated(
+            itemBuilder: ((context, index) {
+              return ListTile(
+                title: Text(
+                  dateRangetansactions[index].category.name,
+                ),
+                subtitle: Text(
+                  parseDate(dateRangetansactions[index].date),
+                ),
+                trailing: Text(
+                  dateRangetansactions[index].amount.toString(),
+                ),
+              );
+            }),
+            separatorBuilder: ((context, index) {
+              return const Divider();
+            }),
+            itemCount: dateRangetansactions.length);
+      }),
+    );
   }
 }
 

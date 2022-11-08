@@ -6,6 +6,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:money_manager/transaction_model/transaction_model.dart';
 
 import '../../catagory_model/category_model.dart';
+import '../../screens/form_screen/form_screen.dart';
 
 const transactionDbName = 'transaction-db';
 
@@ -35,6 +36,12 @@ class TransactionDB implements TransactionDbFunctions {
       ValueNotifier([]);
   ValueNotifier<List<TransactionModel>> monthlyTransactionNotifier =
       ValueNotifier([]);
+  ValueNotifier<List<TransactionModel>> yearlyTransactionNotifier =
+      ValueNotifier([]);
+  ValueNotifier<List<TransactionModel>> allMonthlyincomeTransactions =
+      ValueNotifier([]);
+  ValueNotifier<List<TransactionModel>> allMonthlyExpenseTransactions =
+      ValueNotifier([]);
 
   @override
   Future<void> addTransaction(TransactionModel obj) async {
@@ -56,18 +63,24 @@ class TransactionDB implements TransactionDbFunctions {
 
     transactionListNotifier.notifyListeners();
 
+    //For Getting all income and expense transactions in separate list----->
+
     await Future.forEach(
       _list,
       (TransactionModel transaction) {
         if (transaction.type == CategoryType.income) {
+          _list.sort((first, second) => second.date.compareTo(first.date));
           incomeTransactionNotifier.value.add(transaction);
         } else {
+          _list.sort((first, second) => second.date.compareTo(first.date));
           expenseTransactionNotifier.value.add(transaction);
         }
       },
     );
     incomeTransactionNotifier.notifyListeners();
     expenseTransactionNotifier.notifyListeners();
+
+    //For getting today's transaction List------->
 
     todayTransactionNotifier.value.clear();
     await Future.forEach(
@@ -85,21 +98,61 @@ class TransactionDB implements TransactionDbFunctions {
 
     todayTransactionNotifier.notifyListeners();
 
+    //For getting monthly Transaction List--------->
+
     monthlyTransactionNotifier.value.clear();
     await Future.forEach(
       _list,
       (TransactionModel transaction) {
-        if (transaction.date ==
-            DateTime(
-              DateTime.now().year,
-              DateTime.now().month,
-            )) {
+        if (transaction.date.month == DateTime.now().month) {
+          _list.sort((first, second) => second.date.compareTo(first.date));
           monthlyTransactionNotifier.value.add(transaction);
         }
       },
     );
     monthlyTransactionNotifier.notifyListeners();
+
+    //For getting yearly transaction List------->
+
+    yearlyTransactionNotifier.value.clear();
+    await Future.forEach(
+      _list,
+      (TransactionModel transaction) {
+        if (transaction.date.year == DateTime.now().year) {
+          yearlyTransactionNotifier.value.add(transaction);
+        }
+      },
+    );
+    yearlyTransactionNotifier.notifyListeners();
+
+    //for getting all monthly incomes-------->
+    allMonthlyincomeTransactions.value.clear();
+    await Future.forEach(
+      _list,
+      (TransactionModel transaction) {
+        if (transaction.date.month == DateTime.now().month &&
+            transaction.type == CategoryType.income) {
+          allMonthlyincomeTransactions.value.add(transaction);
+        }
+      },
+    );
+    allMonthlyincomeTransactions.notifyListeners();
+
+    //for getting all monthly expenses------->
+    allMonthlyExpenseTransactions.value.clear();
+    await Future.forEach(
+      _list,
+      (TransactionModel transaction) {
+        if (transaction.date.month == DateTime.now().month &&
+            transaction.type == CategoryType.expense) {
+          allMonthlyExpenseTransactions.value.add(transaction);
+        }
+      },
+    );
+    allMonthlyExpenseTransactions.notifyListeners();
   }
+
+  //Function for Getting Total balance------->
 
   double totalAmount() {
     double totalAmount = 0;
@@ -110,6 +163,8 @@ class TransactionDB implements TransactionDbFunctions {
 
     return totalAmount;
   }
+
+  //Function for getting sum of today's income amount------>
 
   double alltodayIncomeAmount() {
     double allTodayIncomeamount = 0;
@@ -124,18 +179,61 @@ class TransactionDB implements TransactionDbFunctions {
     return allTodayIncomeamount;
   }
 
+  //Function for getting sum of today's expense amount------>
+
   double alltodayExpenseAmount() {
     double allTodayExpenseamount = 0;
     for (var i = 0; i < expenseTransactionNotifier.value.length; i++) {
-      if (expenseTransactionNotifier.value[i].date ==
-          DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day)) {
+      if (expenseTransactionNotifier.value[i].date.month ==
+          DateTime.now().month) {
         allTodayExpenseamount =
-            allTodayExpenseamount + incomeTransactionNotifier.value[i].amount;
+            allTodayExpenseamount + expenseTransactionNotifier.value[i].amount;
       }
     }
     return allTodayExpenseamount;
   }
+
+  //Function for getting the sum of monthly income------->
+
+  double allMonthlyIncomeAmount() {
+    double allMonthlyIncomeAmount = 0;
+    for (var i = 0; i < incomeTransactionNotifier.value.length; i++) {
+      if (incomeTransactionNotifier.value[i].date.month ==
+          DateTime.now().month) {
+        allMonthlyIncomeAmount =
+            allMonthlyIncomeAmount + incomeTransactionNotifier.value[i].amount;
+      }
+    }
+    return allMonthlyIncomeAmount;
+  }
+
+  //Function for getting the sum of monthly expense------->
+
+  double allMonthlyExpenseAmount() {
+    double allMonthlyExpenseAmount = 0;
+    for (var i = 0; i < expenseTransactionNotifier.value.length; i++) {
+      if (expenseTransactionNotifier.value[i].date.month ==
+          DateTime.now().month) {
+        allMonthlyExpenseAmount = allMonthlyExpenseAmount +
+            expenseTransactionNotifier.value[i].amount;
+      }
+    }
+    return allMonthlyExpenseAmount;
+  }
+
+  //Function for getting monthly balance----->
+
+  double monthlyBalance() {
+    double monthlyBalance = 0;
+    for (var i = 0; i < transactionListNotifier.value.length; i++) {
+      monthlyBalance = (allMonthlyIncomeAmount() - allMonthlyExpenseAmount());
+      refresh();
+    }
+
+    return monthlyBalance;
+  }
+
+  //Function for getting total income amount----->
 
   double allIncomeAmount() {
     double totalIncomeAmount = 0;
@@ -149,6 +247,8 @@ class TransactionDB implements TransactionDbFunctions {
     }
     return totalIncomeAmount;
   }
+
+  //Function for gettinf total expense amount------>
 
   double allExpenseAmount() {
     double totalExpenseAmount = 0;

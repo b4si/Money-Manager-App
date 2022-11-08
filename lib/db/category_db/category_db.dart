@@ -26,6 +26,9 @@ class CategoryDB implements CategoryDbFunctons {
       ValueNotifier([]);
   ValueNotifier<List<CategoryModel>> expenseCategoryListNotifier =
       ValueNotifier([]);
+  ValueNotifier<List<CategoryModel>> allIncomeAndExpenseCategoryList =
+      ValueNotifier([]);
+
   @override
   Future<void> insertCategory(CategoryModel value) async {
     final categoryDB = await Hive.openBox<CategoryModel>(categoryDbName);
@@ -43,6 +46,12 @@ class CategoryDB implements CategoryDbFunctons {
     final allCategories = await getCategories();
     incomeCategoryListNotifier.value.clear();
     expenseCategoryListNotifier.value.clear();
+    allIncomeAndExpenseCategoryList.value.clear();
+
+    allIncomeAndExpenseCategoryList.value.addAll(allCategories);
+
+    allIncomeAndExpenseCategoryList.notifyListeners();
+
     await Future.forEach(
       allCategories,
       (CategoryModel category) {

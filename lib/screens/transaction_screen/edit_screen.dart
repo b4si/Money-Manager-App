@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import '../../catagory_model/category_model.dart';
 import '../../db/category_db/category_db.dart';
 import '../../db/transaction_db/transaction_db.dart';
-import '../form_screen/widget.dart';
+import '../form_screen/radio_button.dart';
 
 class EditScreen extends StatefulWidget {
   EditScreen({
