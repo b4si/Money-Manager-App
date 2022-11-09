@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/db/category_db/category_db.dart';
 import 'package:money_manager/db/transaction_db/transaction_db.dart';
-import 'package:money_manager/screens/settings_screen/terms_and_conditions.dart';
 import 'package:money_manager/screens/splash_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -14,15 +13,7 @@ class SettingsScreen extends StatelessWidget {
         children: [
           ListTile(
             title: const Text('Terms and Conditions'),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: ((context) {
-                    return const TermsAndConditions();
-                  }),
-                ),
-              );
-            },
+            onTap: () {},
           ),
           ListTile(
             title: (const Text('Reset all')),
