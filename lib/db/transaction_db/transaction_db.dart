@@ -36,12 +36,13 @@ class TransactionDB implements TransactionDbFunctions {
       ValueNotifier([]);
   ValueNotifier<List<TransactionModel>> monthlyTransactionNotifier =
       ValueNotifier([]);
-  ValueNotifier<List<TransactionModel>> yearlyTransactionNotifier =
-      ValueNotifier([]);
+
   ValueNotifier<List<TransactionModel>> allMonthlyincomeTransactions =
       ValueNotifier([]);
   ValueNotifier<List<TransactionModel>> allMonthlyExpenseTransactions =
       ValueNotifier([]);
+  ValueNotifier<List<TransactionModel>> todayIncomeList = ValueNotifier([]);
+  ValueNotifier<List<TransactionModel>> todayExpenseList = ValueNotifier([]);
 
   @override
   Future<void> addTransaction(TransactionModel obj) async {
@@ -112,19 +113,6 @@ class TransactionDB implements TransactionDbFunctions {
     );
     monthlyTransactionNotifier.notifyListeners();
 
-    //For getting yearly transaction List------->
-
-    yearlyTransactionNotifier.value.clear();
-    await Future.forEach(
-      _list,
-      (TransactionModel transaction) {
-        if (transaction.date.year == DateTime.now().year) {
-          yearlyTransactionNotifier.value.add(transaction);
-        }
-      },
-    );
-    yearlyTransactionNotifier.notifyListeners();
-
     //for getting all monthly incomes-------->
     allMonthlyincomeTransactions.value.clear();
     await Future.forEach(
@@ -150,6 +138,43 @@ class TransactionDB implements TransactionDbFunctions {
       },
     );
     allMonthlyExpenseTransactions.notifyListeners();
+
+    //for getting todays income--------->
+
+    todayIncomeList.value.clear();
+
+    await Future.forEach(
+      _list,
+      (TransactionModel transaction) {
+        if (transaction.date ==
+                DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day) &&
+            transaction.type == CategoryType.income) {
+          todayIncomeList.value.add(transaction);
+        } else {
+          return;
+        }
+      },
+    );
+    todayIncomeList.notifyListeners();
+
+//for getting todays expense--------->
+
+    todayExpenseList.value.clear();
+    await Future.forEach(
+      _list,
+      (TransactionModel transaction) {
+        if (transaction.date ==
+                DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day) &&
+            transaction.type == CategoryType.expense) {
+          todayExpenseList.value.add(transaction);
+        } else {
+          return;
+        }
+      },
+    );
+    todayExpenseList.notifyListeners();
   }
 
   //Function for Getting Total balance------->

@@ -1,11 +1,21 @@
+// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:money_manager/db/category_db/category_db.dart';
 import 'package:money_manager/db/transaction_db/transaction_db.dart';
-import 'package:money_manager/screens/settings_screen/terms_and_conditions.dart';
 import 'package:money_manager/screens/splash_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
+
+  _launchURL() async {
+    const url = 'https://www.youtube.com/watch?v=T0qbFgbFhg0';
+    if (await launch(url)) {
+      await canLaunch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,16 +23,12 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         children: [
           ListTile(
-            title: const Text('Terms and Conditions'),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: ((context) {
-                    return const TermsAndConditions();
-                  }),
-                ),
-              );
-            },
+            title: const Text(
+              'Terms and conditions',
+            ),
+            onTap: (() {
+              _launchURL();
+            }),
           ),
           ListTile(
             title: (const Text('Reset all')),
@@ -46,7 +52,7 @@ class SettingsScreen extends StatelessWidget {
 
                             Navigator.of(context).pushAndRemoveUntil(
                                 (MaterialPageRoute(builder: ((context) {
-                                  return const SplashScreen();
+                                  return SplashScreen();
                                 }))),
                                 (route) => false);
                           },
